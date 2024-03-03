@@ -27,5 +27,20 @@ public class User implements UserType {
         }
     }
 
+    public void withdraw(double amount) {
+        if (account.loggedIn) {
+            account.balance -= amount;
+        }
+    }
+
+    public void deposit(double amount) {
+        if (account.loggedIn) {
+            account.balance += amount;
+        }
+    }
+
+    public double getBalance() {
+        return account.balance;
+    }
 
 }

@@ -5,7 +5,7 @@ public class Account {
     String accountHolder;
     double balance;
     String login;
-    String password;
+    private String password;
     UserType userType;
     boolean loggedIn;
 

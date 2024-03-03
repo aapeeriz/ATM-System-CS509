@@ -26,4 +26,27 @@ public class Administrator implements UserType {
             account.loggedIn = false;
         }
     }
+
+    public void createAccount(int accountNumber, String accountHolder, double balance, String login, String password, UserType userType) {
+        if (account.loggedIn) {
+            Account newAccount = new Account(accountNumber, accountHolder, balance, login, password, userType);
+        }
+    }
+
+    public void deleteAccount(int accountNumber) {
+        if (account.loggedIn) {
+            account = null;
+        }
+    }
+
+    public void updateAccount(int accountNumber, String accountHolder, double balance, String login, String password, UserType userType) {
+        if (account.loggedIn) {
+            account.setAccountNumber(accountNumber);
+            account.setAccountHolder(accountHolder);
+            account.setBalance(balance);
+            account.setLogin(login);
+            account.setPassword(password);
+            account.setUserType(userType);
+        }
+    }
 }
