@@ -1,10 +1,14 @@
 package src.main.java;
 
+import java.util.Scanner;
+
 public class Administrator implements UserType {
     Account account;
+    ATMSystem atmSystem;
 
     public Administrator(Account account) {
         this.account = account;
+        this.atmSystem = new ATMSystem();
     }
 
     public Account getAccount() {
@@ -15,10 +19,10 @@ public class Administrator implements UserType {
         this.account = account;
     }
 
-    public void login(String login, String password) {
+    public boolean login(String login, String password) {
         if (account.getLogin().equals(login) && account.getPassword().equals(password)) {
             account.loggedIn = true;
-        }
+        } return account.loggedIn;
     }
 
     public void logout(boolean sure) {
@@ -27,9 +31,27 @@ public class Administrator implements UserType {
         }
     }
 
-    public void createAccount(int accountNumber, String accountHolder, double balance, String login, String password, UserType userType) {
+    public void createAccount(Account account, Scanner scanner) {
         if (account.loggedIn) {
-            Account newAccount = new Account(accountNumber, accountHolder, balance, login, password, userType);
+            System.out.println("Enter login: ");
+            String login = scanner.nextLine();
+            System.out.println("Enter password: ");
+            String password = scanner.nextLine();
+            System.out.println("Enter account holder: ");
+            String accountHolder = scanner.nextLine();
+            System.out.println("Enter balance: ");
+            double balance = scanner.nextDouble();
+            System.out.println("Enter user type: ");
+            String userType = scanner.nextLine();
+            UserType userType1 = null;
+            if (userType.equals("user")) {
+                userType1 = new User(account);
+            } else if (userType.equals("admin")) {
+                userType1 = new Administrator(account);
+            }
+            String[] col = {"holder", "balance", "login", "password", "userType"};
+            String[] val = {accountHolder, String.valueOf(balance), login, password, userType};
+            DB.insertRow("accounts", col, val);
         }
     }
 
@@ -39,14 +61,27 @@ public class Administrator implements UserType {
         }
     }
 
-    public void updateAccount(int accountNumber, String accountHolder, double balance, String login, String password, UserType userType) {
+    public void updateAccount(Account account, Scanner scanner) {
         if (account.loggedIn) {
-            account.setAccountNumber(accountNumber);
-            account.setAccountHolder(accountHolder);
-            account.setBalance(balance);
-            account.setLogin(login);
-            account.setPassword(password);
-            account.setUserType(userType);
+            System.out.println("Enter account number: ");
+            int accountNumber = scanner.nextInt();
+            Account account1 = atmSystem.getAccount(accountNumber);
+            while (account1 == null) {
+                System.out.println("Account not found. Try again.");
+                accountNumber = scanner.nextInt();
+                account1 = atmSystem.getAccount(accountNumber);
+            }
+            System.out.println("Holder: " + account1.getAccountHolder());
+            System.out.println("Balance: " + account1.getBalance());
+            System.out.println("Status: " + account1.getLogin());
+            System.out.println("Login: " + account1.getLogin());
+            System.out.println("Pin Code: " + account1.getPassword());
+
         }
+            String[] col = {"holder", "balance", "login", "password", "userType"};
+            String[] val = {accountHolder, String.valueOf(balance), login, password, userType};
+            DB.updateRow("accounts", col, val, "accountNumber", String.valueOf(accountNumber));
+        }
+
     }
 }

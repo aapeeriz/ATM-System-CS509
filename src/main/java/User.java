@@ -15,10 +15,10 @@ public class User implements UserType {
         this.account = account;
     }
 
-    public void login(String login, String password) {
+    public boolean login(String login, String password) {
         if (account.getLogin().equals(login) && account.getPassword().equals(password)) {
             account.loggedIn = true;
-        }
+        } return account.loggedIn;
     }
 
     public void logout(boolean sure) {
@@ -42,5 +42,7 @@ public class User implements UserType {
     public double getBalance() {
         return account.balance;
     }
+
+
 
 }
