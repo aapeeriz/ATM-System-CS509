@@ -2,9 +2,11 @@ package src.main.java;
 
 public class User implements UserType {
     Account account;
+    String type;
 
-    public User(Account account) {
+    public User(Account account, String type) {
         this.account = account;
+        this.type = type;
     }
 
     public Account getAccount() {
@@ -42,6 +44,7 @@ public class User implements UserType {
     public double getBalance() {
         return account.balance;
     }
+
 
 
 

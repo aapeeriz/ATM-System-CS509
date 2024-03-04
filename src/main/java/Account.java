@@ -11,6 +11,23 @@ public class Account {
     private String password;
     UserType userType;
     boolean loggedIn;
+
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     String status;
 
     public Account(int accountNumber, String accountHolder, double balance, String login, String password, UserType userType) {
@@ -32,11 +49,15 @@ public class Account {
 
 
     public Account(ResultSet rs) throws SQLException {
-        this.accountHolder = rs.getString("accountHolder");
+        this.accountHolder = rs.getString("holder");
         this.balance = rs.getDouble("balance");
-        this.login = rs.getString("login");
+        this.login = rs.getString("username");
         this.password = rs.getString("password");
-        this.userType = (UserType) rs.getObject("userType");
+        if (rs.getString("userType").equals("user")) {
+            this.userType = new User(this, "user");
+        } else if (rs.getString("userType").equals("admin")) {
+            this.userType = new Administrator(this, "admin");
+        }
     }
 
     public int getAccountNumber() {
@@ -89,7 +110,8 @@ public class Account {
 
 
     public boolean equalUserType(String check) {
-        return userType.toString().equals(check);
+        String type = this.userType.type;
+        return type.equals(check);
     }
 
 }

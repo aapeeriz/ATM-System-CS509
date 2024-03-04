@@ -89,46 +89,33 @@ public class ATMSystem {
                     String userType = scanner.nextLine();
                     UserType userType1 = null;
                     if (userType.equals("user")) {
-                        userType1 = new User(account);
+                        userType1 = new User(account, "user");
                     } else if (userType.equals("admin")) {
-                        userType1 = new Administrator(account);
+                        userType1 = new Administrator(account, "admin");
                     }
-                    ((Administrator) account.userType).createAccount(accountHolder, balance, login, password, userType1);
-                    break;
+                    ((Administrator) account.userType).createAccount(account, scanner);
+                    chooseOptions(account);
                 case 2:
                     System.out.println("Enter account number: ");
                     int accountNumber = scanner.nextInt();
                     ((Administrator) account.userType).deleteAccount(accountNumber);
-                    break;
+                    chooseOptions(account);
                 case 3:
                     System.out.println("Enter account number: ");
                     accountNumber = scanner.nextInt();
-                    System.out.println("Enter account holder: ");
-                    accountHolder = scanner.nextLine();
-                    System.out.println("Enter balance: ");
-                    balance = scanner.nextDouble();
-                    System.out.println("Enter login: ");
-                    login = scanner.nextLine();
-                    System.out.println("Enter password: ");
-                    password = scanner.nextLine();
-                    System.out.println("Enter user type: ");
-                    userType = scanner.nextLine();
-                    userType1 = null;
-                    if (userType.equals("user")) {
-                        userType1 = new User(account);
-                    } else if (userType.equals("admin")) {
-                        userType1 = new Administrator(account);
-                    }
-                    ((Administrator) account.userType).updateAccount(accountNumber, accountHolder, balance, login, password, userType1);
-                    break;
+                    Account account1 = getAccount(accountNumber);
+                    ((Administrator) account.userType).updateAccount(account1, scanner);
+                    chooseOptions(account);
                 case 4:
                     System.out.println("Enter account number: ");
                     accountNumber = scanner.nextInt();
-                    Account account1 = ((Administrator) account.userType).getAccount(accountNumber);
-                    System.out.println("Account number: " + account1.getAccountNumber());
-                    System.out.println("Account holder: " + account1.getAccountHolder());
-                    System.out.println("Balance: " + account1.getBalance());
-                    System.out.println("Login: " +
+                    Account account2 = getAccount(accountNumber);
+                    ((Administrator) account.userType).displayAcc(account2);
+                    chooseOptions(account);
+                case 6:
+                    System.out.println("Goodbye " + account.getAccountHolder() + "!");
+                    ((Administrator) account.userType).logout(true);
+                    break;
             }
         }
     }
@@ -136,10 +123,13 @@ public class ATMSystem {
     private List<Account> getAllAccounts() {
         ArrayList<Account> acc = new ArrayList<Account>();
         try {
-            ResultSet rs = DB.getCol("ATMSystem.accounts", "*");
-            while (rs.next()) {
+            ResultSet rs = DB.getCol("accounts", "*");
+            while (true) {
+                assert rs != null;
+                if (!rs.next()) break;
                 acc.add(new Account(rs));
             }
+            DB.closeDBconnection();
             return acc;
         } catch (SQLException e) {
             e.printStackTrace();

@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public class DB {
     public static Connection c = null;
-    private static final String url = "jdbc:mysql://localhost:3306/mydatabase";
+    private static final String url = "jdbc:mysql://localhost:3306/ATMSystem";
     private static final String username = "root";
     private static final String password = "Chelmsford77&";
 
@@ -18,14 +18,11 @@ public class DB {
      */
     public static void connectToDB() {
         try {
-            if (c == null) {
-                Class.forName("org.postgresql.Driver");
-                c = DriverManager.getConnection(url, username, password);
-            } else {
+            if (c != null) {
                 c.close();
-                Class.forName("org.postgresql.Driver");
-                c = DriverManager.getConnection(url, username, password);
             }
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            c = DriverManager.getConnection(url, username, password);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -110,7 +107,6 @@ public class DB {
             Statement stmt = c.createStatement();
             String query = "SELECT " + column + " FROM " + table;
             ResultSet rs = stmt.executeQuery(query);
-            if (c != null) { closeDBconnection();}
             return rs;
         } catch (SQLException e) {
             System.err.println("ERROR Query Failed: " + e.getMessage());
