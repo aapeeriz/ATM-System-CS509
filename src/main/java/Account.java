@@ -5,20 +5,14 @@ import java.sql.SQLException;
 
 public class Account {
     int accountNumber;
-    String accountHolder;
-    double balance;
-    String login;
+    private String accountHolder;
+    private double balance;
+    private String login;
     private String password;
     UserType userType;
     boolean loggedIn;
+    private String status;
 
-    public boolean isLoggedIn() {
-        return loggedIn;
-    }
-
-    public void setLoggedIn(boolean loggedIn) {
-        this.loggedIn = loggedIn;
-    }
 
     public String getStatus() {
         return status;
@@ -28,7 +22,7 @@ public class Account {
         this.status = status;
     }
 
-    String status;
+
 
     public Account(int accountNumber, String accountHolder, double balance, String login, String password, UserType userType) {
         this.accountNumber = accountNumber;
@@ -66,10 +60,6 @@ public class Account {
         return accountNumber;
     }
 
-    public void setAccountNumber(int accountNumber) {
-        this.accountNumber = accountNumber;
-    }
-
     public String getAccountHolder() {
         return accountHolder;
     }
@@ -100,14 +90,6 @@ public class Account {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public UserType getUserType() {
-        return userType;
-    }
-
-    public void setUserType(UserType userType) {
-        this.userType = userType;
     }
 
 

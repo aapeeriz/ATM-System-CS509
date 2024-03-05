@@ -1,11 +1,10 @@
 package src.main.java;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+
 
 public class ATMSystem {
     List<Account> accounts;
@@ -151,13 +150,6 @@ public class ATMSystem {
         }
         return null;
     }
-
-    public boolean checkHolder(String holder) {
-        if (holder.length() > 0 && holder.length() < 50 && holder.matches("^[a-zA-Z]*$")) {
-            return true;
-        } return false;
-    }
-
 
 
 }

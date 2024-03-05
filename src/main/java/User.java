@@ -9,10 +9,6 @@ public class User implements UserType {
         this.type = type;
     }
 
-    public Account getAccount() {
-        return account;
-    }
-
     public void setAccount(Account account) {
         this.account = account;
     }
@@ -31,24 +27,24 @@ public class User implements UserType {
 
     public void withdraw(double amount) {
         if (account.loggedIn) {
-            account.balance -= amount;
+            double balance = account.getBalance();
+            balance -= amount;
+            account.setBalance(balance);
             String[] columns = {"balance"};
-            String[] values = {String.valueOf(account.balance)};
+            String[] values = {String.valueOf(balance)};
             DB.updateRow("accounts", columns, values, "id =" + account.accountNumber);
         }
     }
 
     public void deposit(double amount) {
         if (account.loggedIn) {
-            account.balance += amount;
+            double balance = account.getBalance();
+            balance += amount;
+            account.setBalance(balance);
             String[] columns = {"balance"};
-            String[] values = {String.valueOf(account.balance)};
+            String[] values = {String.valueOf(balance)};
             DB.updateRow("accounts", columns, values, "id =" + account.accountNumber);
         }
-    }
-
-    public double getBalance() {
-        return account.balance;
     }
 
 

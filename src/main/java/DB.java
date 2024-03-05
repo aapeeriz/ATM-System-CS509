@@ -47,51 +47,7 @@ public class DB {
         }
     }
 
-    /**
-     * Allows the user to enter an SQL query to be executed
-     *
-     * @param query is the query to be executed
-     * @throws SQLException if the query fails
-     */
-    public static void freeQuery(String query) throws SQLException {
-        try {
-            connectToDB();
-            Statement stmt = c.createStatement();
-            stmt.executeQuery(query);
-        } catch (SQLException e) {
-            System.err.println("ERROR Query Failed: " + e.getMessage());
-        } finally {
-            if (c != null) {
-                closeDBconnection();
-            }
-        }
-    }
 
-    /**
-     * Gets the specified colums from a row that matches
-     *
-     * @param table   the able in the db to search in
-     * @param columns the cols to get; format like: col1,col2, ...
-     * @param cond    a condition that selects rows that meet that condition
-     * @return Returns a ResultSet that contains the information queried. returns
-     *         null if an error occurs
-     */
-    public static ResultSet getRowCond(String table, String columns, String cond) {
-        ResultSet rs = null;
-        try {
-            connectToDB();
-            Statement stmt = c.createStatement();
-            String query = "SELECT " + columns + " FROM " + table + " WHERE " + cond;
-            rs = stmt.executeQuery(query);
-            if (c != null) { closeDBconnection();}
-            if (rs != null) {
-                return rs;
-            } else throw new SQLException("No rows found");
-        } catch (SQLException e) {
-            System.err.println("ERROR Query Failed: " + e.getMessage());
-            return null;
-        }
-    }
 
     /**
      * Gets the specified columns given a column name
@@ -112,22 +68,6 @@ public class DB {
             System.err.println("ERROR Query Failed: " + e.getMessage());
             return null;
         }
-    }
-
-    public static ArrayList<String> colRStoStringArray(ResultSet rs) throws SQLException {
-        int listSize = 0;
-        connectToDB();
-        ArrayList<String> stringArray = new ArrayList<>();
-        while (rs.next()) {
-            try {
-                stringArray.add(rs.getString(1));
-            } catch (SQLException e) {
-                System.err.println("ERROR Query Failed: " + e.getMessage());
-                return null;
-            }
-        }
-        if (c != null) {closeDBconnection();}
-        return stringArray;
     }
 
     /**

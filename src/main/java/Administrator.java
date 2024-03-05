@@ -12,10 +12,6 @@ public class Administrator implements UserType {
         this.type = type;
     }
 
-    public Account getAccount() {
-        return account;
-    }
-
     public void setAccount(Account account) {
         this.account = account;
     }
