@@ -32,12 +32,18 @@ public class User implements UserType {
     public void withdraw(double amount) {
         if (account.loggedIn) {
             account.balance -= amount;
+            String[] columns = {"balance"};
+            String[] values = {String.valueOf(account.balance)};
+            DB.updateRow("accounts", columns, values, "id =" + account.accountNumber);
         }
     }
 
     public void deposit(double amount) {
         if (account.loggedIn) {
             account.balance += amount;
+            String[] columns = {"balance"};
+            String[] values = {String.valueOf(account.balance)};
+            DB.updateRow("accounts", columns, values, "id =" + account.accountNumber);
         }
     }
 

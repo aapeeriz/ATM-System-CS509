@@ -32,21 +32,24 @@ public class Administrator implements UserType {
         }
     }
 
-    public void createAccount(Account account, Scanner scanner) {
+    public int createAccount(Account account, Scanner scanner) {
+        int id = 0;
         if (account.loggedIn) {
-            System.out.println("Enter login: ");
+            System.out.println("Enter Login: ");
+            scanner.nextLine();
             String login = scanner.nextLine();
             System.out.println("Enter Pin Code: ");
-            int password = scanner.nextInt();
-            while(String.valueOf(password).length() != 4) {
+            String password = scanner.nextLine();
+            while(password.length() != 5) {
                 System.out.println("Invalid pin code. Try again.");
-                password = scanner.nextInt();
+                password = scanner.nextLine();
             }
-            System.out.println("Enter account holder: ");
+            System.out.println("Enter Holders Name: ");
             String accountHolder = scanner.nextLine();
-            System.out.println("Enter balance: ");
+            System.out.println("Enter Starting Balance: ");
             double balance = scanner.nextDouble();
-            System.out.println("Enter user type: ");
+            scanner.nextLine();
+            System.out.println("Enter User Type (user/admin): ");
             String userType = scanner.nextLine();
             UserType userType1 = null;
             if (userType.equals("user")) {
@@ -54,15 +57,21 @@ public class Administrator implements UserType {
             } else if (userType.equals("admin")) {
                 userType1 = new Administrator(account, "admin");
             }
-            String[] col = {"holder", "balance", "username", "password", "userType"};
-            String[] val = {accountHolder, String.valueOf(balance), login, String.valueOf(password), userType};
-            DB.insertRow("accounts", col, val);
-        }
+            System.out.println("Enter Status (Active/Inactive/Disabled): ");
+            String status = scanner.nextLine();
+            Account account1 = new Account(accountHolder, balance, login, password, userType1);
+            userType1.setAccount(account1);
+            String[] col = {"holder", "balance", "username", "password", "userType", "status"};
+            String[] val = {accountHolder, String.valueOf(balance), login, password, userType, status};
+            id = DB.insertRowAccounts(col, val);
+
+            return id;
+        } return id;
     }
 
     public void deleteAccount(int accountNumber) {
         if (account.loggedIn) {
-            account = null;
+            DB.deleteRow("accounts", "id = " + accountNumber);
         }
     }
     public void displayAcc(Account account) {
@@ -98,22 +107,17 @@ public class Administrator implements UserType {
             } switch (option) {
                 case 1:
                     System.out.println("Enter new account holder: ");
+                    scanner.nextLine();
                     String accountHolder = scanner.nextLine();
                     String[] col = {"holder"};
                     String[] val = {accountHolder};
-                    DB.updateRow("accounts", col, val, "accountNumber = " + String.valueOf(account.getAccountNumber()));
+                    DB.updateRow("accounts", col, val, "id = " + account.getAccountNumber());
                     account.setAccountHolder(accountHolder);
                     System.out.println("Account holder updated.");
-                    System.out.println("Would you like to update anything else? (y/n)");
-                    String response = scanner.nextLine();
-                    if (response.equals("y") || response.equals("Y")) {
-                        updateAccount(account, scanner);
-                    } else if (response.equals("n") || response.equals("N")) {
-                        update = false;
-                    }
 
                 case 2:
                     System.out.println("Enter new status: ");
+                    scanner.nextLine();
                     String newStatus = scanner.nextLine();
                     while (!newStatus.equals("Active") && !newStatus.equals("Inactive") && !newStatus.equals("Disabled")) {
                         System.out.println("Invalid status. Try again.");
@@ -121,56 +125,32 @@ public class Administrator implements UserType {
                     }
                     col = new String[]{"status"};
                     val = new String[]{newStatus};
-                    DB.updateRow("accounts", col, val, "accountNumber = " + String.valueOf(account.getAccountNumber()));
+                    DB.updateRow("accounts", col, val, "id = " + account.getAccountNumber());
                     account.setStatus(newStatus);
                     System.out.println("Status updated.");
-                    System.out.println("Would you like to update anything else? (y/n)");
-                    response = scanner.nextLine();
-                    if (response.equals("y") || response.equals("Y")) {
-                        updateAccount(account, scanner);
-                    } else if (response.equals("n") || response.equals("N")) {
-                        update = false;
-                    }
                 case 3:
                     System.out.println("Enter new login: ");
+                    scanner.nextLine();
                     String newLogin = scanner.nextLine();
                     col = new String[]{"username"};
                     val = new String[]{newLogin};
-                    DB.updateRow("accounts", col, val, "accountNumber = " + String.valueOf(account.getAccountNumber()));
+                    DB.updateRow("accounts", col, val, "id = " + account.getAccountNumber());
                     account.setLogin(newLogin);
                     System.out.println("Login updated.");
-                    System.out.println("Would you like to update anything else? (y/n)");
-                    response = scanner.nextLine();
-                    if (response.equals("y") || response.equals("Y")) {
-                        updateAccount(account, scanner);
-                    } else if (response.equals("n") || response.equals("N")) {
-                        update = false;
-                    }
                 case 4:
                     System.out.println("Enter new pin code: ");
-                    int pinCode = scanner.nextInt();
-                    while (String.valueOf(pinCode).length() != 4) {
+                    scanner.nextLine();
+                    String pinCode = scanner.nextLine();
+                    while (String.valueOf(pinCode).length() != 5) {
                         System.out.println("Invalid pin code. Try again.");
-                        pinCode = scanner.nextInt();
+                        pinCode = scanner.nextLine();
                     }
                     col = new String[]{"password"};
                     val = new String[]{String.valueOf(pinCode)};
-                    DB.updateRow("accounts", col, val, "accountNumber = " + String.valueOf(account.getAccountNumber()));
-                    account.setPassword(String.valueOf(pinCode));
+                    DB.updateRow("accounts", col, val, "id = " + account.getAccountNumber());
+                    account.setPassword(pinCode);
                     System.out.println("Pin code updated.");
-                    System.out.println("Would you like to update anything else? (y/n)");
-                    response = scanner.nextLine();
-                    if (response.equals("y") || response.equals("Y")) {
-                        updateAccount(account, scanner);
-                    } else if (response.equals("n") || response.equals("N")) {
-                        update = false;
-                    }
             }
         }
-        }
-
-
-
-
-
+    }
 }

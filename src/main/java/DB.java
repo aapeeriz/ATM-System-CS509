@@ -175,9 +175,9 @@ public class DB {
         }
         String ret = "";
         for (int i = 0; i < length - 1; i++) {
-            ret += cols[i] + " = " + value[i] + ",";
+            ret += cols[i] + " = '" + value[i] + "',";
         }
-        ret += cols[length - 1] + " = " + value[length - 1];
+        ret += cols[length - 1] + " = '" + value[length - 1] + "'";
         if (c != null) {
             try {
                 closeDBconnection();
@@ -188,26 +188,7 @@ public class DB {
         return ret;
     }
 
-    /**
-     * Inserts a row into the table with the given values
-     *
-     * @param table   the table to insert into
-     * @param columns the columns to insert into
-     * @param value   the values to insert into the corresponding columns
-     */
-    public static void insertRow(String table, String[] columns, String[] value) {
-        try {
-            connectToDB();
-            Statement stmt = c.createStatement();
-            String query = "INSERT INTO "  + table + " (" + strArray2InsertFormatCol(columns) + ") VALUES ("
-                    + strArray2InsertFormat(value) + ")";
-            stmt.executeUpdate(query);
-            if (c != null) { closeDBconnection();}
-        } catch (SQLException e) {
-            System.err.println("ERROR Query Failed: " + e.getMessage());
-        }
-    }
-    public static int insertRowAccounts(String table, String[] columns, String[] value) {
+    public static int insertRowAccounts(String[] columns, String[] value) {
         int id = 0;
         ResultSet rs;
         PreparedStatement stmt = null;
@@ -216,7 +197,8 @@ public class DB {
         try {
             connectToDB();
             c.setAutoCommit(false);
-            String insert = "INSERT INTO ATMSystem.accounts(holder, balance, username, password, loggedIn, userType) VALUES (?, ?, ?, ?, ?, ?)";
+            String insert = "INSERT INTO ATMSystem.accounts(holder, balance, username, password, userType, status) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "SELECT LAST_INSERT_ID();";
             stmt = c.prepareStatement(insert);
             stmt.setString(1, value[0]);
             stmt.setString(2, value[1]);
@@ -225,6 +207,11 @@ public class DB {
             stmt.setString(5, value[4]);
             stmt.setString(6, value[5]);
             stmt.executeUpdate();
+            currvalStatement = c.createStatement();
+            currvalResultSet = currvalStatement.executeQuery(query);
+            if (currvalResultSet.next()) {
+                id = currvalResultSet.getInt(1);
+            }
             c.commit();
             if (c != null) {
                 closeDBconnection();
@@ -233,30 +220,6 @@ public class DB {
             System.err.println("ERROR Query Failed: " + e.getMessage());
         }
         return id;
-    }
-
-    public static String strArray2InsertFormatCol(String[] arr) {
-        String formattedStr = "";
-        for (int i = 0; i < arr.length; i++) {
-            formattedStr += arr[i];
-            if (i != arr.length - 1) {
-                formattedStr += ",";
-            }
-        }
-        return formattedStr;
-    }
-
-    public static String strArray2InsertFormat(String[] arr) {
-        String formattedStr = "'";
-        for (int i = 0; i < arr.length; i++) {
-            formattedStr += arr[i];
-            if (i != arr.length - 1) {
-                formattedStr += "','";
-            } else {
-                formattedStr += "'";
-            }
-        }
-        return formattedStr;
     }
 
     /**

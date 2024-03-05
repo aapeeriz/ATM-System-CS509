@@ -3,6 +3,7 @@ package src.main.java;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -29,21 +30,21 @@ public class ATMSystem {
     }
 
     public boolean checkOptions(Account account, int option) {
-        if (account.equalUserType("user") && option != 1 && option != 3 && option != 4 && option != 5) {
+        if (account.userType instanceof User && option != 1 && option != 3 && option != 4 && option != 5) {
             return false;
-        } else if (account.equalUserType("admin") && option != 1 && option != 2 && option != 3 && option != 4 && option != 6) {
+        } else if (account.userType instanceof Administrator && option != 1 && option != 2 && option != 3 && option != 4 && option != 6) {
             return false;
         } return true;
     }
 
     public void chooseOptions(Account account) {
         System.out.println("Choose an option: ");
-        if (account.equalUserType("user")) {
+        if (account.userType instanceof User) {
             System.out.println("1. Withdraw Cash");
             System.out.println("3. Deposit Cash");
             System.out.println("4. Display Balance");
             System.out.println("5. Exit");
-        } else if (account.equalUserType("admin")) {
+        } else if (account.userType instanceof Administrator) {
             System.out.println("1. Create New Account");
             System.out.println("2. Delete Existing Account");
             System.out.println("3. Update Account Information");
@@ -53,67 +54,73 @@ public class ATMSystem {
     }
 
     public void handleOptions(Account account, int option, Scanner scanner) {
-        if (account.equalUserType("user")) {
+        if (account.userType instanceof User) {
             User user = (User) account.userType;
             switch (option) {
                 case 1:
-                    System.out.println("Enter amount to withdraw: ");
+                    System.out.println("Enter the withdrawal amount: ");
                     double amount = scanner.nextDouble();
                     user.withdraw(amount);
-                    chooseOptions(account);
+                    System.out.println("Cash Successfully Withdrawn");
+                    System.out.println("Account #: " + account.getAccountNumber());
+                    System.out.println("Date: " + java.time.LocalDate.now());
+                    System.out.println("Withdrawn: " + amount);
+                    System.out.println("Balance: " + account.getBalance());
+                    accounts.set(accounts.indexOf(account), account);
+                    break;
                 case 3:
-                    System.out.println("Enter amount to deposit: ");
+                    System.out.println("Enter cash amount to deposit: ");
                     amount = scanner.nextDouble();
                     user.deposit(amount);
-                    chooseOptions(account);
+                    System.out.println("Cash Deposited Successfully.");
+                    System.out.println("Account #: " + account.getAccountNumber());
+                    System.out.println("Date: " + java.time.LocalDate.now());
+                    System.out.println("Deposited: " + amount);
+                    System.out.println("Balance: " + account.getBalance());
+                    accounts.set(accounts.indexOf(account), account);
+                    break;
                 case 4:
-                    System.out.println("Your balance is: " + account.getBalance());
-                    chooseOptions(account);
+                    System.out.println("Account #: " + account.getAccountNumber());
+                    System.out.println("Date: " + java.time.LocalDate.now());
+                    System.out.println("Balance: " + account.getBalance());
+                    break;
                 case 5:
-                    System.out.println("Goodbye " + account.getAccountHolder() + "!");
                     user.logout(true);
                     break;
             }
-        } else if (account.equalUserType("admin")) {
+        } else if (account.userType instanceof Administrator) {
             switch (option) {
                 case 1:
-                    System.out.println("Enter account holder: ");
-                    String accountHolder = scanner.nextLine();
-                    System.out.println("Enter balance: ");
-                    double balance = scanner.nextDouble();
-                    System.out.println("Enter login: ");
-                    String login = scanner.nextLine();
-                    System.out.println("Enter password: ");
-                    String password = scanner.nextLine();
-                    System.out.println("Enter user type: ");
-                    String userType = scanner.nextLine();
-                    UserType userType1 = null;
-                    if (userType.equals("user")) {
-                        userType1 = new User(account, "user");
-                    } else if (userType.equals("admin")) {
-                        userType1 = new Administrator(account, "admin");
-                    }
-                    ((Administrator) account.userType).createAccount(account, scanner);
-                    chooseOptions(account);
+                    int id = ((Administrator) account.userType).createAccount(account, scanner);
+                    System.out.println("Account Successfully Created - the account number assigned is: " + id);
+                    break;
                 case 2:
-                    System.out.println("Enter account number: ");
+                    System.out.println("Enter the account number to which you want to delete: ");
                     int accountNumber = scanner.nextInt();
-                    ((Administrator) account.userType).deleteAccount(accountNumber);
-                    chooseOptions(account);
-                case 3:
-                    System.out.println("Enter account number: ");
+                    Account account2 = getAccount(accountNumber);
+                    System.out.println("You wish to delete the account held by " + account2.getAccountHolder() + ". If this information is correct, please re-enter the account number: ");
                     accountNumber = scanner.nextInt();
-                    Account account1 = getAccount(accountNumber);
-                    ((Administrator) account.userType).updateAccount(account1, scanner);
-                    chooseOptions(account);
+                    if (accountNumber == account2.getAccountNumber()) {
+                        ((Administrator) account.userType).deleteAccount(accountNumber);
+                        accounts.remove(account2);
+                        System.out.println("Account Deleted Successfully");
+                    } else {
+                        System.out.println("Invalid account number. Try again.");
+                    }
+                    break;
+                case 3:
+                    System.out.println("Enter the Account Number: ");
+                    accountNumber = scanner.nextInt();
+                    Account account3 = getAccount(accountNumber);
+                    ((Administrator) account.userType).updateAccount(account3, scanner);
+                    break;
                 case 4:
                     System.out.println("Enter account number: ");
                     accountNumber = scanner.nextInt();
-                    Account account2 = getAccount(accountNumber);
-                    ((Administrator) account.userType).displayAcc(account2);
-                    chooseOptions(account);
+                    Account account4 = getAccount(accountNumber);
+                    ((Administrator) account.userType).displayAcc(account4);
+                    break;
                 case 6:
-                    System.out.println("Goodbye " + account.getAccountHolder() + "!");
                     ((Administrator) account.userType).logout(true);
                     break;
             }
@@ -144,6 +151,13 @@ public class ATMSystem {
         }
         return null;
     }
+
+    public boolean checkHolder(String holder) {
+        if (holder.length() > 0 && holder.length() < 50 && holder.matches("^[a-zA-Z]*$")) {
+            return true;
+        } return false;
+    }
+
 
 
 }

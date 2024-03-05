@@ -49,6 +49,7 @@ public class Account {
 
 
     public Account(ResultSet rs) throws SQLException {
+        this.accountNumber = rs.getInt("id");
         this.accountHolder = rs.getString("holder");
         this.balance = rs.getDouble("balance");
         this.login = rs.getString("username");
@@ -58,6 +59,7 @@ public class Account {
         } else if (rs.getString("userType").equals("admin")) {
             this.userType = new Administrator(this, "admin");
         }
+        this.status = rs.getString("status");
     }
 
     public int getAccountNumber() {
@@ -109,9 +111,5 @@ public class Account {
     }
 
 
-    public boolean equalUserType(String check) {
-        String type = this.userType.type;
-        return type.equals(check);
-    }
 
 }

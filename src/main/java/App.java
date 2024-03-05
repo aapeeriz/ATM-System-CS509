@@ -22,10 +22,11 @@ public class App {
 
         atmSystem.chooseOptions(account);
         int option = scanner.nextInt();
-        while (atmSystem.checkOptions(account, option)) {
+        while (!atmSystem.checkOptions(account, option)) {
             System.out.println("Invalid option. Try again.");
             option = scanner.nextInt();
         }
         atmSystem.handleOptions(account, option, scanner);
+        System.out.println("Goodbye " + account.getAccountHolder() + "!");
     }
 }
